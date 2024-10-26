@@ -22,3 +22,5 @@ export interface ModuleType {
   slots: number;
   price: number;
 }
+
+
