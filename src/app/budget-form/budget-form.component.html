@@ -1,4 +1,48 @@
-<!-- BUILT IT FROM:
-https://getbootstrap.com/docs/5.3/forms/form-control/#example
-https://getbootstrap.com/docs/5.3/forms/select/#default
-https://getbootstrap.com/docs/5.3/forms/select/#default -->
+<div class="container">
+<form [formGroup]="formPresupuesto" (ngSubmit)="guardar()">    
+    <div class="mb-3">
+        <label for="exampleFormControlInput1" class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="nombre" formControlName="nombre">
+      </div>
+      <div class="mb-3">
+        <label for="exampleFormControlTextarea1" class="form-label" formControlName="fecha">Fecha</label>
+        <input type="date" class="form-control" id="fecha">
+      </div>
+
+
+      <button type="button" class="btn btn-primary" (click)="agregarModulo()">Agregar modulo</button>
+
+
+    <div formArrayName="modulos" *ngFor="let item of modulos.controls;let i=index">
+            <h1>Modulos</h1>
+            <button type="button" class="btn btn-primary" (click)="eliminarModulo(i)">Eliminar  </button>
+  
+            <div class="mb-3">
+            <select  class="form-select" aria-label="Default select example" formControlName="tipoModulo">
+                <label class="form-label" formControlName="fecha">Tipo Modulo</label>
+                <option *ngFor="let modulos of listTipoModulos"  value="{{modulos}}">{{modulos}}</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+                <select  class="form-select" aria-label="Default select example"  formControlName="ambiente">
+                    <label class="form-label" formControlName="fecha">Ambiente</label>
+                    <option *ngFor="let amb of listAmbientes"  value="{{amb}}">{{amb}}</option>
+                  </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label">Precio</label>
+                <input type="number" class="form-control" id="precio" formControlName="precio">
+              </div>
+
+              <div class="mb-3">
+                <label for="exampleFormControlInput1" class="form-label" formControlName="lugares">Lugares</label>
+                <input type="text" class="form-control" id="lugares">
+              </div>
+
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar</button>
+    </form>
+</div>
