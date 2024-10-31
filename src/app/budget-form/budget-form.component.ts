@@ -1,15 +1,18 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Form, FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ModuleType, Zone } from '../models/budget';
+import { Budget, ModuleType, Zone } from '../models/budget';
 import { BudgetService } from '../services/budget.service';
+import { RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-budget-form',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [CommonModule,ReactiveFormsModule,RouterModule,HttpClientModule],
   templateUrl: './budget-form.component.html',
   styleUrl: './budget-form.component.css',
+  providers:[BudgetService]
 })
 export class BudgetFormComponent  implements OnInit {
   /* ADDITIONAL DOCS:
@@ -18,16 +21,14 @@ export class BudgetFormComponent  implements OnInit {
   */
 
 
-    formPresupuesto?:FormGroup;
+    formPresupuesto!:FormGroup;
 
     constructor(private formBuilder:FormBuilder,private budgetService:BudgetService){}
 
     listTipoModulos:ModuleType[]=[];
     listAmbientes = Object.values(Zone);
     
-  ngOnInit(): void {
-    
-
+  ngOnInit() {
     this.budgetService.getTiposModulos()
       .subscribe(arg => this.listTipoModulos = arg);
     
@@ -37,6 +38,8 @@ export class BudgetFormComponent  implements OnInit {
       fecha:[''],
       modulos:this.formBuilder.array([])
     })
+
+  
 
   }
 
@@ -50,11 +53,13 @@ export class BudgetFormComponent  implements OnInit {
     const moduloform= this.formBuilder.group({
       tipoModulo:[''],
       ambiente:[''],
-      precio:[''],
+      precio:[0],
       lugares:['']
     })
 
     this.modulos.push(moduloform);
+this,this.valueChanges(moduloform);
+
   }
 
 
@@ -62,10 +67,62 @@ export class BudgetFormComponent  implements OnInit {
       this.modulos.removeAt(index);
   }
 
+  valueChanges(moduloGroup: FormGroup) {
+    moduloGroup.get('tipoModulo')?.valueChanges.subscribe((selectedModule: ModuleType) => {
+        if (selectedModule) {
+            moduloGroup.get('precio')?.setValue(selectedModule.price);
+            moduloGroup.get('lugares')?.setValue(selectedModule.slots);
+        }
+    });
+
+}
+
 
   guardar(){
+    const numeroModulos= this.modulos.length;
+    if(numeroModulos<5){
+      alert("La cantidad de modelos debe ser 5 0 mas");
+    }
+    else if(this.formPresupuesto.valid){
+      
+      const formData= this.formPresupuesto.value;
 
+      const budget:Budget={
+        id:Math.floor(Math.random() * 1000) + 1 + '',
+        date:new Date(formData.fecha),
+        client:formData.nombre,
+        modules: this.formPresupuesto.get('modulos')?.value.map((modulo: { tipoModulo: ModuleType; lugares: number; precio: number; ambiente: string; }) => ({
+          name: modulo.tipoModulo.name, // Aquí asumo que 'tipoModulo' es el nombre del módulo
+          slots: modulo.lugares, // Número de lugares
+          price: modulo.precio, // Precio
+          zona: modulo.ambiente // Asegúrate de que este campo esté en tu FormArray
+        }))
+      }
+      this.budgetService.postBudget(budget)
+        .subscribe(arg => {
+          alert("Cargado correctamente!");
+          this.formPresupuesto.reset();
+        });
+      
+
+    }else
+    {
+      alert("Ocurrio un error al guardar");
+    }
+  
   }
 
 
+  getModuleId(nombre: string): number {
+    console.log(`Buscando módulo con nombre: ${nombre}`); // Añade un log
+    const modulo: ModuleType | undefined = this.listTipoModulos.find(modulo => modulo.name === nombre);
+    if (!modulo) {
+        throw new Error(`Módulo con nombre '${nombre}' no encontrado`);
+    }
+    return modulo.id; 
 }
+
+
+
+}
+
