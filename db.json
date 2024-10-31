@@ -1,5 +1,38 @@
 {
-  "budgets": [],
+  "budgets": [
+    {
+      "id": "1",
+      "date": "2024-10-11T00:00:00.000Z",
+      "client": "lazaro",
+      "modules": [
+        {
+          "name": "Interruptor simple",
+          "slots": 1,
+          "price": 1000,
+          "zona": "Living"
+        },
+        {
+          "name": "USB",
+          "slots": 1,
+          "price": 5000,
+          "zona": "Cocina"
+        }
+      ]
+    },
+    {
+      "id": "899",
+      "date": "2024-10-25T00:00:00.000Z",
+      "client": "franco",
+      "modules": [
+        {
+          "name": "Interruptor simple",
+          "slots": 1,
+          "price": 1000,
+          "zona": "Living"
+        }
+      ]
+    }
+  ],
   "module-types": [
     {
       "id": "1",

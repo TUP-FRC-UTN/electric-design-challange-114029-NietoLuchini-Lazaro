@@ -1,13 +1,20 @@
+import { Signal } from "@angular/core";
+
 export interface Budget {
   id?: string;
   client: string;
   date: Date;
-  /* TODO
-     Add collection to hold data about:
-        - zone
-        - moduleType reference that has information about (slots, price, type)
-  */
+  modules:modules[];
 }
+
+export interface modules{
+  name: string;
+  slots: number;
+  price: number;
+  zona:string;
+}
+
+
 
 export enum Zone {
   LIVING = 'Living',
@@ -22,3 +29,5 @@ export interface ModuleType {
   slots: number;
   price: number;
 }
+
+
